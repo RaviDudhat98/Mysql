@@ -1,13 +1,37 @@
 create database employee; -- Create database 
 show databases; -- Show all databases 
 
-use employee; -- Select database 
+use employee;-- Select database 
 
--- Create tables
-create table hobby (id int(10) primary key, name varchar(70)); 
-create table employee (id int(10) primary key, first_name varchar(35), last_name varchar(35), age tinyint(3), mobile_number bigint(17), address varchar(80));
-create table employee_salary (id int(10) primary key, salary decimal(10, 3), date date, fk_employee_id int(10), foreign key(fk_employee_id) references employee(id));
-create table employee_hobby (id int(10) primary key, fk_employee_id int(10), fk_hobby_id int(10), foreign key(fk_employee_id) references employee(id), foreign key(fk_hobby_id) references hobby(id));
+CREATE TABLE hobby (
+    id INT(10) PRIMARY KEY,
+    name VARCHAR(70)
+);
+CREATE TABLE employee (
+    id INT(10) PRIMARY KEY,
+    first_name VARCHAR(35),
+    last_name VARCHAR(35),
+    age TINYINT(3),
+    mobile_number BIGINT(17),
+    address VARCHAR(80)
+);
+CREATE TABLE employee_salary (
+    id INT(10) PRIMARY KEY,
+    salary DECIMAL(10 , 3 ),
+    date DATE,
+    fk_employee_id INT(10),
+    FOREIGN KEY (fk_employee_id)
+        REFERENCES employee (id)
+);
+CREATE TABLE employee_hobby (
+    id INT(10) PRIMARY KEY,
+    fk_employee_id INT(10),
+    fk_hobby_id INT(10),
+    FOREIGN KEY (fk_employee_id)
+        REFERENCES employee (id),
+    FOREIGN KEY (fk_hobby_id)
+        REFERENCES hobby (id)
+);
 
 -- Show tables
 show tables;
@@ -60,16 +84,38 @@ insert into employee_hobby values
 (511, 105, 11), (512, 105, 12), (513, 105, 13), (514, 105, 14);
 
 -- Update table records
-update hobby set name = 'Walking' where id = 1;
-update employee set first_name = 'Rajveer', last_name = 'Singh' where id = 105;
-update employee_salary set salary = 5000.50 where id = 13;
+UPDATE hobby 
+SET 
+    name = 'Walking'
+WHERE
+    id = 1;
+UPDATE employee 
+SET 
+    first_name = 'Rajveer',
+    last_name = 'Singh'
+WHERE
+    id = 105;
+UPDATE employee_salary 
+SET 
+    salary = 5000.50
+WHERE
+    id = 13;
 
 -- Delete table records
-Delete from employee_hobby where fk_hobby_id = 13 and fk_employee_id = 105;
-Delete from employee_salary where fk_employee_id = 101;
+DELETE FROM employee_hobby 
+WHERE
+    fk_hobby_id = 13
+    AND fk_employee_id = 105;
+DELETE FROM employee_salary 
+WHERE
+    fk_employee_id = 101;
 SET FOREIGN_KEY_CHECKS = 0;
-Delete from employee where id = 104;
-Delete from hobby where id in (12, 14);
+DELETE FROM employee 
+WHERE
+    id = 104;
+DELETE FROM hobby 
+WHERE
+    id IN (12 , 14);
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- Delete table data
@@ -79,13 +125,51 @@ truncate table employee_salary;
 truncate table employee_hobby;
 
 -- Show table data
-select * from hobby;
-select * from employee;
-select * from employee_salary;
-select * from employee_hobby;
+SELECT 
+    *
+FROM
+    hobby;
+SELECT 
+    *
+FROM
+    employee;
+SELECT 
+    *
+FROM
+    employee_salary;
+SELECT 
+    *
+FROM
+    employee_hobby;
 
 -- Create a select single query to get all employee name, hobby_name in single column
-select concat(e.first_name,' ', e.last_name) as employee_name_and_hobbies from employee e union select h.name from hobby h; 
+SELECT 
+    CONCAT(first_name, ' ', last_name) AS employee_name
+FROM
+    employee 
+UNION SELECT 
+    name
+FROM
+    hobby;
 
 -- Create a select query to get employee name, his/her employee_salary
-select concat(e.first_name,' ', e.last_name) as employee_name, s.salary as employee_Salary from employee e, employee_salary s;
+SELECT 
+    CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
+    s.salary AS employee_salary
+FROM
+    employee e,
+    employee_salary s
+WHERE
+    e.id = s.fk_employee_id;
+
+-- Create a select query to get employee name, total salary of employee, hobby name(comma-separated - you need to use subquery for hobby name).
+SELECT CONCAT(e.first_name, ' ', e.last_name) As employee_name, SUM(es.salary) AS employee_salary      
+FROM employee e, employee_salary es
+WHERE e.id = es.fk_employee_id    
+GROUP BY e.id;
+
+select first_name, group_concat(distinct h.name separator', ') as hobby 
+from employee e 
+inner join employee_hobby eh on e.id = eh.fk_employee_id 
+inner join hobby h on h.id = eh.fk_hobby_id 
+group by e.id;
