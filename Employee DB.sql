@@ -1,7 +1,7 @@
 create database employee; -- Create database 
 show databases; -- Show all databases 
 
-use employee;-- Select database 
+use employee; -- Select database 
 
 CREATE TABLE hobby (
     id INT(10) PRIMARY KEY,
@@ -17,7 +17,7 @@ CREATE TABLE employee (
 );
 CREATE TABLE employee_salary (
     id INT(10) PRIMARY KEY,
-    salary DECIMAL(10 , 3 ),
+    salary DECIMAL(10 , 3),
     date DATE,
     fk_employee_id INT(10),
     FOREIGN KEY (fk_employee_id)
@@ -59,7 +59,8 @@ insert into employee value
 (102, 'Arpit', 'Jain', 27, 9876549510, 'Bhuj - 300009'), 
 (103, 'Ashish', 'Verma', 25, 9876223210, 'Ahmedabad - 300008'), 
 (104, 'Anant', 'Kumar', 21, 9876543000, 'Surat - 300004'),
-(105, 'Vipul', 'Shah', 30, 9806543210, 'Anand - 300002');
+(105, 'Vipul', 'Shah', 30, 9806543210, 'Anand - 300002'),
+(106, 'Jay', 'Sharma', 32, 9806000010, 'Bhavanagar - 300102');
 
 insert into employee_salary value 
 (1, 12000.50, '2021-12-20', 101),
@@ -163,13 +164,15 @@ WHERE
     e.id = s.fk_employee_id;
 
 -- Create a select query to get employee name, total salary of employee, hobby name(comma-separated - you need to use subquery for hobby name).
-SELECT CONCAT(e.first_name, ' ', e.last_name) As employee_name, SUM(es.salary) AS employee_salary      
-FROM employee e, employee_salary es
-WHERE e.id = es.fk_employee_id    
+SELECT CONCAT(e.first_name, ' ', e.last_name) AS employee_name, SUM(es.salary) AS employee_salary,
+		(SELECT GROUP_CONCAT(DISTINCT h.name SEPARATOR ', ')
+        FROM hobby h, employee_hobby eh
+        WHERE h.id = eh.fk_hobby_id AND e.id = eh.fk_employee_id) AS hobby
+FROM employee e LEFT JOIN employee_salary es
+ON e.id = es.fk_employee_id
 GROUP BY e.id;
 
-select first_name, group_concat(distinct h.name separator', ') as hobby 
-from employee e 
-inner join employee_hobby eh on e.id = eh.fk_employee_id 
-inner join hobby h on h.id = eh.fk_hobby_id 
-group by e.id;
+SELECT CONCAT(e.first_name, ' ', e.last_name) AS employee_name, SUM(es.salary) AS employee_salary		
+FROM employee e LEFT JOIN employee_salary es
+ON e.id = es.fk_employee_id
+GROUP BY e.id;
