@@ -26,7 +26,7 @@ truncate table employee;
 -- Insert data into table
 insert into job values 
 (1, 'Sales Manager', 5000.10, 25000.10),
-(2, 'Manager', 10000.20, 20000.20),
+(2, 'Manager', 15000.20, 40000.20),
 (3, 'Accountant', 25000.30, 60000.30),
 (4, 'Research Officer', 15000.40, 35000.40),
 (5, 'Finance Manager', 10000.50, 30000.50);
@@ -40,7 +40,7 @@ insert into department values
 
 insert into employee values 
 (501, 'Parth', 'Patel', 'parthP@gmail.com', 10000.10, 401, 1),
-(502, 'Arpit', 'Jain', 'AJain@gmail.com', 15000.10, 402, 2),
+(502, 'Arpit', 'Jain', 'AJain@gmail.com', 20000.10, 402, 2),
 (503, 'Vipul', 'Shah', 'VipulS@gmail.com', 40000.10, 403, 3),
 (504, 'Jay', 'Sharma', 'jaySharma@gmail.com', 30000.10, 404, 4),
 (505, 'Ashish', 'Verma', 'AVerma@gmail.com', 30000.10, 405, 5);
@@ -59,6 +59,8 @@ from country c, job j, employee e, department d
 where j.id = e.fk_job_id and c.id = d.fk_country_id and d.id = e.fk_department_id;
 
 -- 2. Get 2nd highest salary of the employee
-
+select * from employee order by salary desc
+limit 1, 2;
 
 -- 3. Get all job name and department name in single query
+select name from job union select name from department;
